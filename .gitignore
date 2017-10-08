@@ -1,1 +1,8 @@
 _ignore_stuff
+code/Experiment1-clean.R
+code/Experiment2-clean.R
+code/MCsampling functions.R
+code/e1-temp.rda
+code/e2-temp.rda
+data/Exp1-data.csv
+data/Exp2-data.csv
