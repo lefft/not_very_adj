@@ -1,5 +1,6 @@
 _ignore_stuff
-code/*
-data/*
-paper/*
+code/*.r
+data/*.csv
+paper/*.tex
+paper/*.pdf
 README.html
