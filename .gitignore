@@ -1,6 +1,8 @@
 _ignore_stuff
-code/*.r
-data/*.csv
+code/check_before_pushing
+data/check_before_pushing
+TODO.md
 paper/*.tex
 paper/*.pdf
-README.html
+plots/expt1_bysubj_response_distro.pdf
+plots/expt2_bysubj_response_distro.pdf
