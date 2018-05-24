@@ -1,6 +1,12 @@
 _ignore_stuff
 code/check_before_pushing
 data/check_before_pushing
+data/Expt1-data.csv
+data/Expt2-data.csv
+data/Expt1-ip_id_table.csv
+data/Expt2-ip_id_table.csv
+data/Expt1-data_cleaned_screened-----.csv
+data/Expt2-data_cleaned_screened-----.csv
 TODO.md
 paper/*.tex
 paper/*.pdf
