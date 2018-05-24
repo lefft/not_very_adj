@@ -1,3 +1,6 @@
+## TODO -- INTEGRATE ANONYMIZED DATA CONVENTIONS (IP ~~~> subj_id) 
+
+
 ### EXPERIMENT 1: PREPARE DATA FOR ANALYSIS ###################################
 ###  
 ### this script cleans up the raw data for experiment 1: 

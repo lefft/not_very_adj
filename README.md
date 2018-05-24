@@ -10,45 +10,59 @@ This is a repository containing the experimental data, code, and figures associa
 
 <br>
 
+
+
 	****************************************************************************
-	**                                                                        **
-	** note: if you're reading this then the repo is still being populated!   **
-	**                                                                        **
+	**            note: repo under active construction! (may/2018)            **
 	****************************************************************************
 
 
-
-### contents of repo (to be populated)
+### contents
 
 ```
-├── README.md
+├── README.md                                      (add walk-thru/docs)
+├── _ignore
 │
-├── lcrg2018.bib
+├── code
+│   ├── anonymize_data.r                           live
+│   ├── analysis_expt1.r                           (final read-thru then push)
+│   ├── analysis_expt2.r                           (final read-thru then push)
+│   ├── analysis_functions.r                       (final read-thru then push)
+│   ├── cleanup_expt1.r                            live
+│   ├── cleanup_expt2.r                            live
+│   ├── cleanup_functions.r                        live
+│   ├── figures_expt1.r                            live
+│   ├── figures_expt2.r                            live
+│   └── figures_functions.r                        live
 │
-├── code/
-│   ├── analysis_experiment1.r
-│   ├── analysis_experiment2.r
-│   ├── analysis_functions.r
-│   ├── figures.r
-│   └── figures_functions.r
+├── data
+│   ├── Expt1-data_anon.csv                        (push after read-thru(??))
+│   ├── Expt1-data_anon_cleaned_screened.csv       (push after read-thru)
+│   ├── Expt2-data_anon.csv                        (push after read-thru(??))
+│   └── Expt2-data_anon_cleaned_screened.csv       (push after read-thru)
 │
-├── data/
-│   ├── experiment1_data.csv
-│   └── experiment1_data.csv
+├── figures
+│   ├── figure2.pdf                                live
+│   ├── figure3.pdf                                live
+│   ├── figure4.pdf                                live
+│   ├── figure6.pdf                                live
+│   ├── figure6_allpreds.pdf                       live
+│   ├── figure7.pdf                                live
+│   └── figure8.pdf                                live
 │
-├── figures/
-│   ├── figure2.pdf
-│   ├── figure3.pdf
-│   ├── figure4.pdf
-│   ├── figure6.pdf
-│   ├── figure6_allpreds.pdf
-│   ├── figure7.pdf
-│   └── figure8.pdf
+├── paper
+│   ├── LCRG2018.bib                               (clean up all entries)
+│   ├── LCRG2018.tex                               (not yet final)
+│   └── LCRG2018.pdf                               (not yet final)
 │
-└── paper/
-    ├── LCRG2018_vagueness_implicature.tex
-    └── LCRG2018_vagueness_implicature.pdf
-
+└── plots
+    ├── expt1_age_distro.pdf                       live
+    ├── expt1_bypred_response_distro.pdf           live
+    ├── expt1_bysubj_response_distro.pdf           (generate anon then push)
+    ├── expt2_age_distro.pdf                       live
+    ├── expt2_bypred_response_distro.pdf           live
+    └── expt2_bysubj_response_distro.pdf           (generate anon then push)
 ```
+
 
 
