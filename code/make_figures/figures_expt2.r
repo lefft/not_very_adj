@@ -26,11 +26,13 @@ line_labels <- c("[Adj] and [not Adj]    ", "[Adj] but [not [very Adj]]")
 
 # set this to true to build all figs in one shot 
 save_figs <- TRUE
-figure_save_path <- "../_ignore_stuff/figze"
+figure_save_path <- "../../figures"
 
 
 
-expt2_clean_data_fname <- "../data/Expt2-data_cleaned_screened-----.csv"
+expt2_clean_data_fname <- "../../data/Expt2-data_cleaned_screened.csv"
+message("using experiment 2 data from file:\n  >> ", expt2_clean_data_fname)
+
 dat <- read.csv(expt2_clean_data_fname, stringsAsFactors=FALSE)
 names(dat) <- tolower(names(dat))
 
@@ -41,7 +43,7 @@ dat <- dat %>%
   mutate(comparative = factor(comparative, levels=c("positive", "comparative")))
 
 
-lapply(dat %>% select(-ip, -response), unique)
+lapply(dat %>% select(-subj_id, -response), unique)
 # `$adj` ~~> Tall, Fast, Hot
 # `$pred` ~~> 24 vals, 4 for each construction
 # `$pred2` ~~> 4 vals, Adj, NotAdj, VeryAdj, NotVeryAdj
@@ -61,6 +63,7 @@ x_label <- paste0("Normalized Units ",
 
 
 ### figure 6 ------------------------------------------------------------------
+message("working on figure 6...")
 
 # mean response curves for "increasing" preds, six panes total: 
 #   - cols for Tall, Hot, Fast
@@ -85,11 +88,13 @@ figure6_allpreds <- grid.arrange(arrangeGrob(
 
 
 ### figure 7 ------------------------------------------------------------------
+message("working on figure 7...")
 
 # mean response curves for notAdj + notVeryAdj, six panes total: 
 #   - same format as fig5
 #   - cluster rectangles where significant 
 
+### TODO: TRIPLE CHECK CLUSTER RANGES!!!
 expt2_clusters <- data_frame(
   adj = rep(c("Fast", "Hot", "Tall"), each=2), 
   comparative = rep(c("positive", "comparative"), times=3), 
@@ -118,6 +123,7 @@ figure7 <- fig6_fig7_component(
 
 
 ### figure 8 ------------------------------------------------------------------
+message("working on figure 8...")
 
 # reconstructed predicates, six panes total: 
 #   - same grid format as fig5/6
@@ -133,10 +139,8 @@ dat2_wide <- dat %>%
     mean_response = mean(response)
   ) %>% ungroup() %>% 
   dcast(normunit + comparative + adj ~ pred2, value.var="mean_response") %>% 
-  mutate(
-    ANVA_reconstructed = fl_and(Adj, fl_not(VeryAdj, scale_max=100)), 
-    ANA_reconstructed = fl_and(Adj, NotAdj) 
-  )
+  mutate(ANVA_reconstructed = fl_and(Adj, fl_not(VeryAdj, scale_max=100)), 
+         ANA_reconstructed = fl_and(Adj, NotAdj))
 
 # get the mean and se for each reconstructed pred, at each scale point/pred 
 dat2_reconstructed <- dat2_wide %>% 
@@ -168,6 +172,8 @@ dat2_reconstructed <- dat2_reconstructed %>%
 
 # build the plot and assign it to `figure8`
 figure8 <- dat2_reconstructed %>% 
+  # force pane layout to match other plots ('tall' on left, 'late' on right)
+  # mutate(adj = factor(adj, levels=c("tall", "late"))) %>% 
   ggplot(aes(x=normunit, y=mean, color=recon_pred, shape=recon_pred)) + 
   geom_point(size=rel(.95), alpha=.75) + 
   geom_line(alpha=.75, size=rel(.2)) + 
@@ -198,6 +204,7 @@ figure8 <- dat2_reconstructed %>%
 ### save figures (if `save_figs=T`) -------------------------------------------
 
 if (save_figs){
+  message("writing experiment 2 figures to disk at `", figure_save_path, "`...")
   
   # save figure 6 
   ggsave(filename=file.path(figure_save_path, "figure6.pdf"), 

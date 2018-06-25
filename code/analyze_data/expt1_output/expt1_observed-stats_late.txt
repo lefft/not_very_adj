@@ -1,0 +1,20 @@
+Experiment 1: Cluster permutation analysis results
+'not late' versus 'not very late'
+=================================
+
+Cluster range: 9:02 9:05 9:08 9:14 9:21 9:27 9:36
+Cluster size: 50.4
+p-value: 0
+Mean difference: 20 (23) vs. 46 (34)
+
+
+Experiment 1: Cluster permutation analysis results
+'not late' versus 'not very late'
+=================================
+
+Cluster range: 8:39 8:48 8:54 8:57 9:00
+Cluster size: 38.3
+p-value: 0
+Mean difference: 89 (16) vs. 59 (32)
+
+

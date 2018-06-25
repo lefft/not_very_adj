@@ -1,0 +1,10 @@
+Experiment 1: Cluster permutation analysis results
+'not tall' versus 'not very tall'
+=================================
+
+Cluster range: 74 75 77
+Cluster size: 8.2
+p-value: 4e-04
+Mean difference: 10 (13) vs. 16 (20)
+
+

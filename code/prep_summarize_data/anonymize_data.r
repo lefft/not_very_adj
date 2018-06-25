@@ -1,45 +1,71 @@
-### ANONYMIZE EXPERIMENTAL DATA BEFORE DATA CLEANUP AND ANALYSIS ##############
-### written by timothy leffel, may/2018 ---------------------------------------
+### CONVERT IP MD5 TO CLEAN SUBJ ID BEFORE DATA CLEANUP AND ANALYSIS ##########
+### 
+### author:  timothy leffel
+### contact: tjleffel@gmail.com, http://lefft.xyz
+### edited:  may27/2018
 ### 
 ### 
-### this script masks private participant ids with anonymous ones. 
-### here we replace IP addresses with strings of form "subjXXX", e.g. "subj007".
+### this script masks participant IP MD5-hashes with semi-arbitrary ids.
+### here we replace IP hashes with strings of form "subjXXX", e.g. "subj007".
 ### 
-### the identifiable data is not included in the public repository, so this 
-### script is included just for the sake of completeness. 
+### [MD5](https://en.wikipedia.org/wiki/MD5) hashes are already fairly secure, 
+### so this is just an additional step to ensure anonymity of subj identities. 
+### 
+### this script is included just for the sake of completeness, since the 
+### data containing original IP hashes are not included in the public repo.
 ### 
 ### input files: 
 ###   - Expt1-data.csv -- lightly cleaned ibex farm output, w subj IPs (expt 1)
 ###   - Expt2-data.csv -- lightly cleaned ibex farm output, w subj IPs (expt 2)
 ### 
 ### output files:
-###   - Expt1-data_anon.csv -- same as `Expt1-data.csv`, but w anonymized ids
-###   - Expt2-data_anon.csv -- same as `Expt2-data.csv`, but w anonymized ids
-###   - Expt1-ip_id_table.csv -- correspondence between IPs and anonymous ids
-###   - Expt2-ip_id_table.csv -- correspondence between IPs and anonymous ids
+###   - Expt1-data_anon.csv -- same as `Expt1-data.csv`, but w "subj***" ids
+###   - Expt2-data_anon.csv -- same as `Expt2-data.csv`, but w "subj***" ids
+###   - Expt1-ip_id_table.csv -- correspondence between IPs and subj ids
+###   - Expt2-ip_id_table.csv -- correspondence between IPs and subj ids
 
 
 
 
+### 1. read in data and set output filenames ----------------------------------
+root <- function(...) file.path("~/Dropbox/NotVeryExperiment/paper-repo", ...)
 
-### 1. define anonymization function ------------------------------------------
+files <- list(
+  # input files (lightly cleaned ibex farm output)
+  expt1 = root("data/Expt1-data.csv"), 
+  expt2 = root("data/Expt2-data.csv"),
+  # datasets with IP hashes replaced by "subj***" 
+  expt1_anon = root("data/Expt1-data_anon.csv"), 
+  expt2_anon = root("data/Expt2-data_anon.csv"), 
+  # table associating original IP hashes with subj id strings
+  expt1_id_dict = root("data/Expt1-ip_id_table.csv"), 
+  expt2_id_dict = root("data/Expt2-ip_id_table.csv"))
+
+
+dat1 <- read.csv(files$expt1, stringsAsFactors=FALSE)
+dat2 <- read.csv(files$expt2, stringsAsFactors=FALSE)
+
+
+
+
+### 2. define function to convert IP hashes to semi-arbitrary ids -------------
 
 # function to replace non-anonymous ids with arbitrary ones (e.g. "subj007")
+# param `order_col` determines who gets "subj001", "subj002", ... 
 anonymize_df <- function(dat, id_col, order_col, return_dict=FALSE){
   # params: 
   #   `dat` = a data frame containing columns named `id_col` and `order_col`
-  #   `id_col` = name of column holding subj ids (e.g. IP addresses)
+  #   `id_col` = name of column holding subj identifiers (e.g. IP addresses)
   #   `order_col` = column saying who gets earlier id (higher vals = higher id)
   
   # collect IP addresses (`id_col`) and timestamps (`order_col`)
-  id_order_df <- data.frame(
-    id_col = dat[[id_col]], order_col = dat[[order_col]])
+  id_order_df <- data.frame(id_col=dat[[id_col]], order_col=dat[[order_col]])
   
   # get `order_col` max for each `id_col` value (to assign chronological ids)
   max_byid <- tapply(id_order_df$order_col, id_order_df$id_col, max)
   
   # make a df with old ids (IPs), to add masked ids to (e.g. "subj007")
-  id_table <- data.frame(old_id = unique(dat[[id_col]]), stringsAsFactors=FALSE)
+  id_table <- data.frame(old_id=unique(dat[[id_col]]), stringsAsFactors=FALSE)
   
   # arrange ids table by most recent timestamp
   id_table$sorter <- as.numeric(max_byid[id_table$old_id])
@@ -62,33 +88,24 @@ anonymize_df <- function(dat, id_col, order_col, return_dict=FALSE){
   if (return_dict)
     return(list(data=dat, id_dict=id_table[, c("old_id", "new_id")]))
   
+  # otherwise just return the data 
   return(dat)
 }
 
 
 
-### 2. read data and anonymize it, collecting ip-id tables --------------------
-root <- function(...) file.path("~/Dropbox/NotVeryExperiment/paper-repo", ...)
 
-files <- list(
-  expt1 = root("data/Expt1-data.csv"), 
-  expt1_anon = root("data/check_before_pushing/Expt1-data_anon.csv"), 
-  expt1_id_dict = root("data/check_before_pushing/Expt1-ip_id_table.csv"), 
-  expt2 = root("data/Expt2-data.csv"),
-  expt2_anon = root("data/check_before_pushing/Expt2-data_anon.csv"), 
-  expt2_id_dict = root("data/check_before_pushing/Expt2-ip_id_table.csv"))
-
-
-dat1 <- read.csv(files$expt1, stringsAsFactors=FALSE)
-dat2 <- read.csv(files$expt2, stringsAsFactors=FALSE)
-
+### 3. anonymize data, recording ip-id correspondence in a table --------------
 message("\nanonymizing datasets for Expt1 and Expt2...\n")
+
+# function returns a list containing the data and the ip-id table 
 dat1_anon <- anonymize_df(dat1, id_col="IP", order_col="date", return_dict=TRUE)
 dat2_anon <- anonymize_df(dat2, id_col="IP", order_col="date", return_dict=TRUE)
 
 
 
-### 3. make some assertions to confirm that all data preserved ----------------
+
+### 4. make some assertions to confirm that all data preserved ----------------
 
 # check that column contents (except id col) are all identical 
 stopifnot(all(sapply(setdiff(names(dat1), c("IP", "subj_id")), function(cname){
@@ -112,10 +129,9 @@ message("\nall tests passed, anonymization performed safely.\n")
 
 
 
-### 4. write anonymized data to disk ------------------------------------------
+### 5. write anonymized data and ip-id tables to disk -------------------------
 
 # if session still live here, then it's safe to write + use the anonymized data
-
 
 # save the id lookup tables (associates unmasked IP with arbitrary identifier)
 message("writing table associating IPs with anonymized ids to files:\n  ", 
@@ -141,7 +157,8 @@ write.csv(dat2_anon$data, files$expt2_anon, row.names=FALSE)
 
 
 
-# #### some additional verification in case you're still worried 
+# #### here's some additional verification in case you re-use this and are 
+# #### still worried about whether all data is preserved exactly 
 # suppressPackageStartupMessages(library(dplyr))
 # summary1 <- dat1 %>% group_by(IP) %>% 
 #   summarize(r=mean(as.numeric(response), na.rm=TRUE)) %>% 

@@ -15,17 +15,15 @@
 suppressPackageStartupMessages(library(dplyr))
 suppressPackageStartupMessages(library(ggplot2))
 
-source("cleanup_functions.r")
-
 files <- list(
   # data file from expt2, to be read in and cleaned up 
-  expt2_raw_data_fname = "../data/Exp2-data.csv",
+  expt2_raw_data_fname = "../../data/Expt2-data_anon.csv",
   # expt2 analysis dataset -- gets written to disk at bottom of this script 
-  expt2_clean_data_outname = "../data/Expt2-data_cleaned_screened-----.csv",
+  expt2_clean_data_outname = "../../data/Expt2-data_cleaned_screened.csv",
   # some diagnostic/summary plots that we'll save at the end 
-  age_plot_outname = "../plots/expt2_age_distro.pdf",
-  bysubj_plot_outname = "../plots/expt2_bysubj_response_distro.pdf",
-  bypred_plot_outname = "../plots/expt2_bypred_response_distro.pdf")
+  age_plot_outname = "../../plots-check/expt2_age_distro.pdf",
+  bysubj_plot_outname = "../../plots-check/expt2_bysubj_response_distro.pdf",
+  bypred_plot_outname = "../../plots-check/expt2_bypred_response_distro.pdf")
 
 
 
@@ -44,14 +42,14 @@ expt2_raw_data <- read.csv(files$expt2_raw_data_fname, stringsAsFactors=FALSE)
 # extract subject info (will find excludable subjects after cleaning items)
 subj_info <- dplyr::as_data_frame(expt2_raw_data) %>% 
   filter(content %in% c("age","language","mturkid")) %>% 
-  group_by(IP) %>% summarize(
+  group_by(subj_id) %>% summarize(
     mturk_id = unique(response[content=="mturkid"]),
     date = as.character(unique(date)),
     age = unique(response[content=="age"]),
     lang = unique(response[content=="language"]),
     adj = unique(Adj)
   ) %>% ungroup %>% 
-  arrange(desc(IP))
+  arrange(desc(subj_id))
 
 
 # remove questionnaire items from data, then clean up a bit 
@@ -99,22 +97,22 @@ dat$NormUnit <- dplyr::case_when(
 ### 2. identify subjs to exclude from analysis (see paper sec 3.1) ------------
 
 # a subj is excluded if:
-#   2.1: their self-reported native lang is not english;    (`non_native_ips`)
-#   2.2: they did the same expt more than once; or          (`double_take_ips`)
-#   2.3: they perform < at chance on "extreme" items        (`inaccurate_ips`)
+#   2.1: their self-reported native lang is not english;    (`non_native_ids`)
+#   2.2: they did the same expt more than once; or          (`double_take_ids`)
+#   2.3: they perform < at chance on "extreme" items        (`inaccurate_ids`)
 
 
 
-# 2.1 non-native ips (all are english for expt2, see `unique(subj_info$lang)`)
+# 2.1 non-native ids (all are english for expt2, see `unique(subj_info$lang)`)
 # [identifies *0* subj to exclude]
-non_native_ips <- subj_info$IP[!subj_info$lang %in% c(
+non_native_ids <- subj_info$subj_id[!subj_info$lang %in% c(
   "English", "english", "ENGLISH", "Englsh", "engllish", "Emglish")]
 
 
 
-# 2.2 ips of subjs who took same expt twice (none for expt2)
+# 2.2 ids of subjs who took same expt twice (none for expt2)
 # [identifies *0* subj to exclude] 
-double_take_ips <- character(0)
+double_take_ids <- character(0)
 
 
 
@@ -122,7 +120,7 @@ double_take_ips <- character(0)
 dat_extreme <- dat %>% 
   filter(NormUnit <= -6 | NormUnit >= 12) %>% 
   filter(Pred2 %in% c("Adj", "NotAdj")) %>% 
-  select(IP, response, Adj, Pred, Pred2, Comparative, Unit, NormUnit) %>% 
+  select(subj_id, response, Adj, Pred, Pred2, Comparative, Unit, NormUnit) %>% 
   mutate(region = ifelse(NormUnit < 0, "lo", ifelse(NormUnit > 0, "hi", NA)))
 
 
@@ -134,23 +132,23 @@ dat_extreme <- dat_extreme %>%
                                 region=="lo" ~ response > 50, TRUE ~ NA)))
 
 
-subj_performance <- dat_extreme %>% group_by(IP) %>% summarize(
+subj_performance <- dat_extreme %>% group_by(subj_id) %>% summarize(
   n_extreme_trials = n(), 
   prop_correct_extreme = sum(correct) / n_extreme_trials
 )
 
 # join performance info with the main subj info data frame 
-subj_info <- subj_info %>% left_join(subj_performance, by="IP")
+subj_info <- subj_info %>% left_join(subj_performance, by="subj_id")
 
 # two subjs are below chance on performance metric 
 # [identifies *2* subjs to exclude] 
-inaccurate_ips <- subj_info$IP[subj_info$prop_correct_extreme < .5]
+inaccurate_ids <- subj_info$subj_id[subj_info$prop_correct_extreme < .5]
 
 
 # extract bad subjs from `subj_info`, collect into a data frame 
 subj_info_exclusions <- rbind(
-  mutate(subj_info[subj_info$IP %in% non_native_ips, ], reason="non-native"),
-  mutate(subj_info[subj_info$IP %in% inaccurate_ips, ], reason="performance"))
+  mutate(subj_info[subj_info$subj_id %in% non_native_ids, ], reason="non-engl"),
+  mutate(subj_info[subj_info$subj_id %in% inaccurate_ids, ], reason="bad-perf"))
 
 
 
@@ -158,14 +156,15 @@ subj_info_exclusions <- rbind(
 ### 3. remove bad subjs, save clean + screened data ---------------------------
 
 # remove all response data for the two subj's identified in 2. above 
-dat_screened <- dat[!dat$IP %in% subj_info_exclusions$IP, ]
+dat_screened <- dat[!dat$subj_id %in% subj_info_exclusions$subj_id, ]
 
 # define a subj-level data frame with only non-excluded subjs 
-subj_info_screened <- subj_info[subj_info$IP %in% dat_screened$IP, ]
+subj_info_screened <- subj_info[subj_info$subj_id %in% dat_screened$subj_id, ]
 
 
 # check all trials either excluded or in screened dataset (shd be `TRUE`)
-sum(dat$IP %in% subj_info_exclusions$IP)+nrow(dat_screened) == nrow(dat)
+identical(sum(dat$subj_id %in% subj_info_exclusions$subj_id)+nrow(dat_screened),
+          nrow(dat))
 
 # write cleaned + screened data to disk for analysis 
 message("\nwriting clean/screened experiment analysis dataset to file:\n  >> ", 
@@ -198,7 +197,7 @@ age_plot <- qplot(subj_info_screened$age) +
 bysubj_plot <- dat_screened %>% 
   ggplot(aes(x=response)) + 
   geom_density(fill="gray", alpha=.5) +
-  facet_wrap(~IP, ncol=12) + 
+  facet_wrap(~subj_id, ncol=12) + 
   labs(title="Experiment 2 by-participant response distributions", 
        x="response, on 0-100 slider scale") + 
   theme_bw() + 

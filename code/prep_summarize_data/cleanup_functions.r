@@ -35,3 +35,10 @@ expt1_unit_to_common_scale <- function(unit){
 
 
 
+# convert a string of integers (unix timestamp) to date or time string or both
+parse_unix_timestamp <- Vectorize(function(digits, epoch="1970-01-01"){
+  digits <- as.numeric(digits) / 1e3
+  return(as.character(as.POSIXct(digits, origin=epoch)))
+}, USE.NAMES=FALSE)
+
+

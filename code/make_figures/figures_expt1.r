@@ -27,15 +27,17 @@ line_labels <- c("[Adj] and [not Adj]    ", "[Adj] but [not [very Adj]]")
 
 # set this to true to build all figs in one shot 
 save_figs <- TRUE
-figure_save_path <- "../_ignore_stuff/figze"
+figure_save_path <- "../../figures"
 
 
 
-expt1_clean_data_fname <- "../data/Expt1-data_cleaned_screened-----.csv"
+expt1_clean_data_fname <- "../../data/Expt1-data_cleaned_screened.csv"
+message("using experiment 1 data from file:\n  >> ", expt1_clean_data_fname)
+
 dat <- read.csv(expt1_clean_data_fname, stringsAsFactors=FALSE)
 names(dat) <- tolower(names(dat))
 
-lapply(dat %>% select(-ip, -response), unique)
+lapply(dat %>% select(-subj_id, -response), unique)
 # `$adj` ~~> Tall, Late
 # `$pred` ~~> 14 vals, 7 for each adj
 # `$unit` ~~> 26 vals, 13 for each adj 
@@ -44,6 +46,7 @@ lapply(dat %>% select(-ip, -response), unique)
 
 
 ### figure 2 ------------------------------------------------------------------
+message("working on figure 2...")
 
 # mean response curves for all the preds, w two panes for each adj:
 # 
@@ -65,6 +68,7 @@ figure2 <- grid.arrange(arrangeGrob(
 
 
 ### figure 3 ------------------------------------------------------------------
+message("working on figure 3...")
 
 # mean response curves for notAdj vs notVeryAdj, w one pane for each adj: 
 #   - lines for notAdj + notVeryAdj
@@ -85,6 +89,7 @@ figure3 <- grid.arrange(arrangeGrob(
 
 
 ### figure 4 ------------------------------------------------------------------
+message("working on figure 4...")
 
 # reconstructed predicates, w one pane for each adj. lines for:  
 #   - adj and not very adj
@@ -101,7 +106,7 @@ relevant_preds <- c(
 # get mean responses by subj, scale point, pred, and adj 
 dat1_subj_item_summary <- dat %>% 
   filter(pred %in% relevant_preds) %>% 
-  select(ip, pred, adj, normunit, repetition, response) %>% 
+  select(subj_id, pred, adj, normunit, repetition, response) %>% 
   mutate(pred2 = case_when(
     pred %in% c("tall", "late") ~ "Adj", 
     pred %in% c("notTall", "notLate") ~ "notAdj", 
@@ -109,10 +114,10 @@ dat1_subj_item_summary <- dat %>%
     pred %in% c("notVeryTall", "notVeryLate") ~ "notVeryAdj"
   )) %>% 
   mutate(response01 = response / 100) %>% 
-  group_by(ip, normunit, pred2, adj) %>% summarize(
+  group_by(subj_id, normunit, pred2, adj) %>% summarize(
     mean_resp01 = mean(response01)
   ) %>% ungroup() %>% 
-  dcast(ip + normunit + adj ~ pred2, value.var="mean_resp01")
+  dcast(subj_id + normunit + adj ~ pred2, value.var="mean_resp01")
 
 
 # define the reconstructed interpretations for 'adj but not very adj' 
@@ -142,8 +147,9 @@ dat1_reconstructed <- dat1_subj_item_summary %>%
 # (plots lines for 'Adj and not Adj', 'Adj and not very Adj')
 figure4 <- dat1_reconstructed %>% 
   mutate(adj = tolower(adj)) %>% 
-  # TODO -- CHECK THIS STEP, WHY NOT FOR INCHES?? 
-  # 1 norm unit is 3 minutes 
+  # force pane layout to match other plots ('tall' on left, 'late' on right)
+  mutate(adj = factor(adj, levels=c("tall", "late"))) %>% 
+  # 1 norm unit = 1 inch = 3 minutes 
   mutate(normunit = normunit / 3) %>% 
   mutate(recon_pred = factor(recon_pred, levels=c("ANA", "ANVA"), 
                              labels=line_labels)) %>% 
@@ -179,7 +185,7 @@ figure4 <- dat1_reconstructed %>%
 ### save figures (if `save_figs=T`) -------------------------------------------
 
 if (save_figs){
-  
+  message("writing experiment 1 figures to disk at `", figure_save_path, "`...")
   # save figure 2 
   ggsave(plot=figure2, filename=file.path(figure_save_path, "figure2.pdf"), 
          width=6.5, height=4, units="in")

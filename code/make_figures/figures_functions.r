@@ -60,8 +60,9 @@ fig2_component <- function(dat, A, which_legend="top"){
   # a surprisingly complicated process! (with mid-2017 ggplot2:: at least) 
   # example: fig2_component(dat=dat1, A="Tall")
   
-  # requires that we use these column names (**adjust this later**)
-  if (sum(names(dat) %in% c("ip","adj","unit","pred","normunit","response"))<6){
+  # requires that we use these column names
+  needed_cols <- c("subj_id","adj","unit","pred","normunit","response")
+  if (sum(names(dat) %in% needed_cols) < 6){
     message("cols need to include:\n  >> ", paste(names(dat), collapse=", "))
     return(NULL)
   }

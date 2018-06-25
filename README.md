@@ -24,6 +24,31 @@ This is a repository containing the experimental data, code, and figures associa
 ├── _ignore
 │
 ├── code
+│   ├── prep_summarize_data/
+│   │   ├── anonymize_data.r
+│   │   ├── cleanup_functions.r
+│   │   ├── cleanup_expt1.r
+│   │   └── cleanup_expt2.r
+│   │
+│   ├── make_figures/
+│   │   ├── figures_functions.r
+│   │   ├── figures_expt1.r
+│   │   └── figures_expt2.r
+│   │
+│   ├── analyze_data/
+│   │   ├── analysis_functions.r
+│   │   ├── analysis_expt1.r
+│   │   ├── analysis_expt1.r
+│   │   ├── expt1_output/
+│   │   │   └── [analysis summary files]
+│   │   └── expt1_output/
+│   │       └── [analysis summary files]
+│   │
+
+
+
+
+├── code
 │   ├── anonymize_data.r                           live
 │   ├── analysis_expt1.r                           (final read-thru then push)
 │   ├── analysis_expt2.r                           (final read-thru then push)
