@@ -1,7 +1,0 @@
-[1] "Experiment 1: Cluster permutation analysis results"
-[1] "'not tall' versus 'not very tall'"
-[1] "================================="
-[1] "Cluster range: 74 75 77"
-[1] "Cluster size: 8.2"
-[1] "p-value: 4e-04"
-[1] "Mean difference: 10 (13) vs. 16 (20)"
