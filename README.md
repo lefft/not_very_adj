@@ -1,27 +1,23 @@
 
 #### code/data repository for "Vagueness in implicature"  
 
-##### Leffel, Cremers, Romoli, Gotzner (2018, to appear)
+##### Leffel, Cremers, Romoli, Gotzner (2019, *Journal of Semantics*)
 <hr>
 
 This is a repository containing the experimental data, code, and figures associated with the paper
 > "Vagueness in implicature: The case of modified adjectives" 
 > 
-> Leffel, Cremers, Romoli, Gotzner (to appear in *Journal of Semantics*) 
+> Leffel, Cremers, Romoli, Gotzner (2019, *Journal of Semantics*) 
 
 <br>
 
 
 
-	****************************************************************************
-	**            note: repo under active construction! (june24/2018)         **
-	****************************************************************************
-
 
 ### contents
 
 ```
-├── README.md                                      (under construction)
+├── README.md
 ├── _ignore
 │
 ├── code
@@ -39,11 +35,11 @@ This is a repository containing the experimental data, code, and figures associa
 │   └── analyze_data/
 │       ├── analysis_functions.r
 │       ├── analysis_expt1.r
-│       ├── analysis_expt2.r                       (not yet here!)
+│       ├── analysis_expt2.r
 │       ├── expt1_output/
 │       │   └── [analysis summary files]
-│       └── expt2_output/                          (not yet here!)
-│           └── [analysis summary files]           (not yet here!)
+│       └── expt2_output/
+│           └── [analysis summary files]
 │
 ├── data
 │   ├── Expt1-data_anon.csv
@@ -61,9 +57,7 @@ This is a repository containing the experimental data, code, and figures associa
 │   └── figure8.pdf
 │
 ├── paper
-│   ├── LCRG2018.bib                               (not yet here!)
-│   ├── LCRG2018.tex                               (not yet here!)
-│   └── LCRG2018.pdf                               (not yet here!)
+│   └── [TODO: insert preprint pdf]
 │
 └── plots
     ├── expt1_age_distro.pdf
