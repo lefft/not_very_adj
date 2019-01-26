@@ -1,5 +1,5 @@
 
-#### code/data repository for "Vagueness in implicature"  
+#### code/data repository for ["Vagueness in implicature"](https://academic.oup.com/jos/advance-article-abstract/doi/10.1093/jos/ffy020/5289547)
 
 ##### Leffel, Cremers, Romoli, Gotzner (2019, *Journal of Semantics*)
 <hr>
